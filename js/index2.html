@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Create a heatmap layer with filtering</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+	#filter { position: absolute; top: 10px; left: 10px; z-index: 1; background: white; padding: 10px; max-height: 90%; overflow-y: auto; }
+</style>
+</head>
+<body>
+<div id="filter">
+  <h3>Filter by field:</h3>
+  <form id="field-form">
+    <select id="field-select" multiple size="5" style="width: 100%;">
+        <option value="" disabled>-- Select Field --</option>
+        <option value="None">None</option>
+        <option value="Public Infrastructure">Public Infrastructure (1465)</option>
+        <option value="Environment">Environment (200)</option>
+        <option value="Healthcare">Healthcare (116)</option>
+        <option value="Public Administration">Public Administration (94)</option>
+        <option value="Public Services">Public Services (93)</option>
+        <option value="Business Policy">Business Policy (74)</option>
+        <option value="Land Use and Zoning">Land Use and Zoning (71)</option>
+        <option value="Public Policy">Public Policy (64)</option>
+        <option value="Public Behavior">Public Behavior (60)</option>
+        <option value="Education">Education (40)</option>
+        <option value="Employment and Labor">Employment and Labor (21)</option>
+        <option value="Social Welfare">Social Welfare (15)</option>
+        <option value="Education Policy">Education Policy (10)</option>
+        <option value="Social Services">Social Services (8)</option>
+        <option value="Technology Services">Technology Services (6)</option>
+        <option value="Public Governance">Public Governance (3)</option>
+        <option value="Agriculture">Agriculture (3)</option>
+    </select>
+  </form>
+  
+  
+  <h3>Filter by district:</h3>
+  <form id="district-form">
+    <select id="district-select" multiple size="5" style="width: 100%;">
+        <option value="" disabled>-- Select Field --</option>
+        <option value="None">None</option>
+        <option value="Yên Bái">Yên Bái (886)</option>
+        <option value="Yên Bình">Yên Bình (318)</option>
+        <option value="Văn Yên">Văn Yên (270)</option>
+        <option value="Văn Chấn">Văn Chấn (229)</option>
+        <option value="Trấn Yên">Trấn Yên (190)</option>
+        <option value="Lục Yên">Lục Yên (153)</option>
+        <option value="Nghĩa Lộ">Nghĩa Lộ (78)</option>
+        <option value="Mù Cang Chải">Mù Cang Chải (46)</option>
+        <option value="Trạm Tấu">Trạm Tấu (21)</option>
+        <option value="Yên Ninh">Yên Ninh (10)</option>
+        <option value="Hồng Hà">Hồng Hà (9)</option>
+        <option value="Nguyễn Thái Học">Nguyễn Thái Học (9)</option>
+        <option value="P.Hồng Hà">P.Hồng Hà (8)</option>
+        <option value="Đại Sơn">Đại Sơn (7)</option>
+        <option value="Yên Thịnh">Yên Thịnh (6)</option>
+        <option value="Bạch Hà">Bạch Hà (5)</option>
+        <option value="Hải Châu">Hải Châu (4)</option>
+        <option value="Nguyễn Phúc">Nguyễn Phúc (4)</option>
+        <option value="Đồng Tâm">Đồng Tâm (4)</option>
+        <option value="Thạch Thất">Thạch Thất (4)</option>
+        <option value="P.Yên Ninh">P.Yên Ninh (4)</option>
+        <option value="P.Yên Thịnh">P.Yên Thịnh (4)</option>
+        <option value="Xuân Lai">Xuân Lai (4)</option>
+        <option value="Bảo Ái">Bảo Ái (3)</option>
+        <option value="Nguyễn Khắc Nhu">Nguyễn Khắc Nhu (3)</option>
+        <option value="Minh Tân">Minh Tân (3)</option>
+        <option value="Trung Tâm">Trung Tâm (3)</option>
+        <option value="P.Minh Tân">P.Minh Tân (2)</option>
+        <option value="Phúc Khánh">Phúc Khánh (2)</option>
+        <option value="Mang Yang">Mang Yang (2)</option>
+        <option value="Tuyên Quang">Tuyên Quang (2)</option>
+        <option value="P.Nguyễn Thái Học">P.Nguyễn Thái Học (2)</option>
+        <option value="Đường 70">Đường 70 (2)</option>
+        <option value="P.Đồng Tâm">P.Đồng Tâm (2)</option>
+        <option value="Tdp Số 5">Tdp Số 5 (2)</option>
+        <option value="Mậu Đông">Mậu Đông (2)</option>
+        <option value="Cao Lãnh">Cao Lãnh (1)</option>
+        <option value="Đường Bách Lẫm">Đường Bách Lẫm (1)</option>
+        <option value="Nông trường Trần Phú">Nông trường Trần Phú (1)</option>
+        <option value="Việt Yên">Việt Yên (1)</option>
+        <option value="Ba Đình">Ba Đình (1)</option>
+        <option value="Ba Vì">Ba Vì (1)</option>
+        <option value="Hạ Hòa">Hạ Hòa (1)</option>
+        <option value="Bắc Quang">Bắc Quang (1)</option>
+        <option value="Bắc Mê">Bắc Mê (1)</option>
+        <option value="Lý Tự Trọng">Lý Tự Trọng (1)</option>
+        <option value="Bảo Hưng">Bảo Hưng (1)</option>
+        <option value="Hạ Long">Hạ Long (1)</option>
+        <option value="khu đô thị Phía Tây">khu đô thị Phía Tây (1)</option>
+        <option value="Sơn La">Sơn La (1)</option>
+        <option value="Ngã Năm">Ngã Năm (1)</option>
+        <option value="Quận 7">Quận 7 (1)</option>
+        <option value="Long Biên">Long Biên (1)</option>
+        <option value="P. Nguyễn Phúc">P. Nguyễn Phúc (1)</option>
+        <option value="Hợp Minh">Hợp Minh (1)</option>
+        <option value="Hòa Vang">Hòa Vang (1)</option>
+        <option value="Tiên Du">Tiên Du (1)</option>
+        <option value="Lê Lợi">Lê Lợi (1)</option>
+        <option value="Nam Đông">Nam Đông (1)</option>
+        <option value="Yên Thành">Yên Thành (1)</option>
+        <option value="Đại Từ">Đại Từ (1)</option>
+        <option value="Lương Thịnh">Lương Thịnh (1)</option>
+        <option value="Ninh Hòa">Ninh Hòa (1)</option>
+        <option value="Vĩnh Kiên">Vĩnh Kiên (1)</option>
+        <option value="Mê Linh">Mê Linh (1)</option>
+        <option value="Kon Plông">Kon Plông (1)</option>
+        <option value="Đồ Sơn">Đồ Sơn (1)</option>
+        <option value="Thủ Đức">Thủ Đức (1)</option>
+        <option value="Đường Tô Hiệu">Đường Tô Hiệu (1)</option>
+        <option value="Túc Đán">Túc Đán (1)</option>
+        <option value="Hai Bà Trưng">Hai Bà Trưng (1)</option>
+        <option value="Hoà Cuông">Hoà Cuông (1)</option>
+        <option value="Mường La">Mường La (1)</option>
+        <option value="TT. Yên Bình">TT. Yên Bình (1)</option>
+        <option value="xã Nam Cường">xã Nam Cường (1)</option>
+    </select>
+  </form>
+  
+  <h3>Filter by commune:</h3>
+  <form id="commune-form">
+    <select id="commune-select" multiple size="5" style="width: 100%;">
+        <option value="" disabled>-- Select Commune --</option>
+        <option value="None">None</option>
+        <option value="Yên Ninh">Yên Ninh (264)</option>
+        <option value="Minh Tân">Minh Tân (137)</option>
+        <option value="Yên Bình">Yên Bình (115)</option>
+        <option value="Đồng Tâm">Đồng Tâm (93)</option>
+        <option value="Thành phố Yên Bái">Thành phố Yên Bái (81)</option>
+        <option value="Nguyễn Thái Học">Nguyễn Thái Học (70)</option>
+        <option value="Mậu A">Mậu A (59)</option>
+        <option value="Hồng Hà">Hồng Hà (57)</option>
+        <option value="Văn Phú">Văn Phú (50)</option>
+        <option value="Sơn Thịnh">Sơn Thịnh (46)</option>
+        <option value="Giới Phiên">Giới Phiên (40)</option>
+        <option value="Yên Thịnh">Yên Thịnh (40)</option>
+        <option value="Yên Thế">Yên Thế (39)</option>
+        <option value="Phú Thịnh">Phú Thịnh (38)</option>
+        <option value="Cổ Phúc">Cổ Phúc (38)</option>
+        <option value="Tân Thịnh">Tân Thịnh (36)</option>
+        <option value="Cát Thịnh">Cát Thịnh (32)</option>
+        <option value="Nguyễn Phúc">Nguyễn Phúc (32)</option>
+        <option value="An Thịnh">An Thịnh (32)</option>
+        <option value="Lâm Giang">Lâm Giang (27)</option>
+        <option value="Thượng Bằng La">Thượng Bằng La (23)</option>
+        <option value="Tân Nguyên">Tân Nguyên (22)</option>
+        <option value="Âu Lâu">Âu Lâu (22)</option>
+        <option value="Lương Thịnh">Lương Thịnh (22)</option>
+        <option value="Y Can">Y Can (22)</option>
+        <option value="Hợp Minh">Hợp Minh (21)</option>
+        <option value="Đại Đồng">Đại Đồng (21)</option>
+        <option value="Mù Cang Chải">Mù Cang Chải (21)</option>
+        <option value="Tân Hợp">Tân Hợp (21)</option>
+        <option value="Trung Tâm">Trung Tâm (19)</option>
+        <option value="Chấn Thịnh">Chấn Thịnh (19)</option>
+        <option value="Cảm Nhân">Cảm Nhân (18)</option>
+        <option value="Tân An">Tân An (18)</option>
+        <option value="Động Quan">Động Quan (18)</option>
+        <option value="Nam Cường">Nam Cường (17)</option>
+        <option value="Thác Bà">Thác Bà (17)</option>
+        <option value="Đông An">Đông An (17)</option>
+        <option value="Nghĩa Lộ">Nghĩa Lộ (17)</option>
+        <option value="Châu Quế Hạ">Châu Quế Hạ (16)</option>
+        <option value="Minh Xuân">Minh Xuân (14)</option>
+        <option value="Bình Thuận">Bình Thuận (14)</option>
+        <option value="Bảo Hưng">Bảo Hưng (14)</option>
+        <option value="Suối Giàng">Suối Giàng (14)</option>
+        <option value="An Lạc">An Lạc (11)</option>
+        <option value="Nông trường Trần Phú">Nông trường Trần Phú (11)</option>
+        <option value="Yên Hợp">Yên Hợp (11)</option>
+        <option value="Hán Đà">Hán Đà (11)</option>
+        <option value="Lang Thíp">Lang Thíp (11)</option>
+        <option value="Cảm Ân">Cảm Ân (11)</option>
+        <option value="Tân Lĩnh">Tân Lĩnh (11)</option>
+        <option value="Phúc An">Phúc An (11)</option>
+        <option value="Vũ Linh">Vũ Linh (10)</option>
+        <option value="Đào Thịnh">Đào Thịnh (10)</option>
+        <option value="Tuy Lộc">Tuy Lộc (10)</option>
+        <option value="Việt Cường">Việt Cường (10)</option>
+        <option value="Đông Cuông">Đông Cuông (10)</option>
+        <option value="Hưng Thịnh">Hưng Thịnh (10)</option>
+        <option value="Văn Yên">Văn Yên (10)</option>
+        <option value="An Bình">An Bình (9)</option>
+        <option value="Tân Hương">Tân Hương (9)</option>
+        <option value="Khánh Hòa">Khánh Hòa (9)</option>
+        <option value="Đại Minh">Đại Minh (9)</option>
+        <option value="Thịnh Hưng">Thịnh Hưng (9)</option>
+        <option value="Liễu Đô">Liễu Đô (9)</option>
+        <option value="Trạm Tấu">Trạm Tấu (9)</option>
+        <option value="Báo Đáp">Báo Đáp (9)</option>
+        <option value="Minh Bảo">Minh Bảo (8)</option>
+        <option value="Pú Trạng">Pú Trạng (8)</option>
+        <option value="Sơn Lương">Sơn Lương (7)</option>
+        <option value="Châu Quế Thượng">Châu Quế Thượng (7)</option>
+        <option value="Minh Quân">Minh Quân (6)</option>
+        <option value="Tú Lệ">Tú Lệ (6)</option>
+        <option value="Mỏ Vàng">Mỏ Vàng (6)</option>
+        <option value="Yên Phú">Yên Phú (6)</option>
+        <option value="Hưng Khánh">Hưng Khánh (6)</option>
+        <option value="Mông Sơn">Mông Sơn (6)</option>
+        <option value="Nông trường Liên Sơn">Nông trường Liên Sơn (6)</option>
+        <option value="Quy Mông">Quy Mông (6)</option>
+        <option value="Mai Sơn">Mai Sơn (6)</option>
+        <option value="Đồng Khê">Đồng Khê (6)</option>
+        <option value="Yên Thành">Yên Thành (6)</option>
+        <option value="Thị xã Nghĩa Lộ">Thị xã Nghĩa Lộ (5)</option>
+        <option value="Tô Mậu">Tô Mậu (5)</option>
+        <option value="Púng Luông">Púng Luông (5)</option>
+        <option value="Nghĩa Tâm">Nghĩa Tâm (5)</option>
+        <option value="Đại Lịch">Đại Lịch (5)</option>
+        <option value="Mậu Đông">Mậu Đông (5)</option>
+        <option value="Cầu Thia">Cầu Thia (5)</option>
+        <option value="Phúc Lợi">Phúc Lợi (5)</option>
+        <option value="Cường Thịnh">Cường Thịnh (5)</option>
+        <option value="Lâm Thượng">Lâm Thượng (4)</option>
+        <option value="Tân Đồng">Tân Đồng (4)</option>
+        <option value="Xuân Tầm">Xuân Tầm (4)</option>
+        <option value="Nậm Mười">Nậm Mười (4)</option>
+        <option value="Minh An">Minh An (4)</option>
+        <option value="Phong Dụ Hạ">Phong Dụ Hạ (4)</option>
+        <option value="Nậm Lành">Nậm Lành (4)</option>
+        <option value="Ngọc Chấn">Ngọc Chấn (4)</option>
+        <option value="Bảo Ái">Bảo Ái (4)</option>
+        <option value="Hải Châu 1">Hải Châu 1 (4)</option>
+        <option value="Nậm Khắt">Nậm Khắt (4)</option>
+        <option value="Hồng Ca">Hồng Ca (4)</option>
+        <option value="Xà Hồ">Xà Hồ (4)</option>
+        <option value="Xuân Long">Xuân Long (4)</option>
+        <option value="Vân Hội">Vân Hội (4)</option>
+        <option value="Nghĩa Lợi">Nghĩa Lợi (4)</option>
+        <option value="Xuân Ái">Xuân Ái (4)</option>
+        <option value="Nga Quán">Nga Quán (4)</option>
+        <option value="Minh Quán">Minh Quán (4)</option>
+        <option value="Yên Thái">Yên Thái (4)</option>
+        <option value="Vĩnh Kiên">Vĩnh Kiên (4)</option>
+        <option value="Ngòi A">Ngòi A (4)</option>
+        <option value="Hòa Cuông">Hòa Cuông (4)</option>
+        <option value="Sơn A">Sơn A (3)</option>
+        <option value="Mỹ Gia">Mỹ Gia (3)</option>
+        <option value="Cao Phạ">Cao Phạ (3)</option>
+        <option value="Bạch Hà">Bạch Hà (3)</option>
+        <option value="Nà Hẩu">Nà Hẩu (3)</option>
+        <option value="Phong Dụ Thượng">Phong Dụ Thượng (3)</option>
+        <option value="Đại Sơn">Đại Sơn (3)</option>
+        <option value="Trấn Yên">Trấn Yên (3)</option>
+        <option value="Dế Xu Phình">Dế Xu Phình (3)</option>
+        <option value="Viễn Sơn">Viễn Sơn (3)</option>
+        <option value="Minh Tiến">Minh Tiến (3)</option>
+        <option value="Kiên Thành">Kiên Thành (3)</option>
+        <option value="Minh Chuẩn">Minh Chuẩn (3)</option>
+        <option value="Việt Thành">Việt Thành (3)</option>
+        <option value="Nậm Búng">Nậm Búng (3)</option>
+        <option value="Việt Hồng">Việt Hồng (2)</option>
+        <option value="Đăk Yă">Đăk Yă (2)</option>
+        <option value="Phình Hồ">Phình Hồ (2)</option>
+        <option value="Sùng Đô">Sùng Đô (2)</option>
+        <option value="Khai Trung">Khai Trung (2)</option>
+        <option value="La Pán Tẩn">La Pán Tẩn (2)</option>
+        <option value="Mường Lai">Mường Lai (2)</option>
+        <option value="Xuân Lai">Xuân Lai (2)</option>
+        <option value="Suối Quyền">Suối Quyền (2)</option>
+        <option value="Phường 1">Phường 1 (2)</option>
+        <option value="Thanh Lương">Thanh Lương (2)</option>
+        <option value="Hát Lìu">Hát Lìu (2)</option>
+        <option value="Gia Hội">Gia Hội (2)</option>
+        <option value="An Lương">An Lương (2)</option>
+        <option value="Khao Mang">Khao Mang (2)</option>
+        <option value="Yên Thắng">Yên Thắng (2)</option>
+        <option value="Pá Lau">Pá Lau (2)</option>
+        <option value="Hạnh Sơn">Hạnh Sơn (2)</option>
+        <option value="Quốc lộ 2D">Quốc lộ 2D (2)</option>
+        <option value="Lao Chải">Lao Chải (2)</option>
+        <option value="Nghĩa Phúc">Nghĩa Phúc (2)</option>
+        <option value="Nậm Có">Nậm Có (2)</option>
+        <option value="Vĩnh Lạc">Vĩnh Lạc (2)</option>
+        <option value="Phúc Sơn">Phúc Sơn (2)</option>
+        <option value="Thượng Quảng">Thượng Quảng (1)</option>
+        <option value="Hòa Phong">Hòa Phong (1)</option>
+        <option value="Trúc Lâu">Trúc Lâu (1)</option>
+        <option value="Tự Lạn">Tự Lạn (1)</option>
+        <option value="Văn Chấn">Văn Chấn (1)</option>
+        <option value="Yên Lãng">Yên Lãng (1)</option>
+        <option value="Cống Vị">Cống Vị (1)</option>
+        <option value="Yên Bài">Yên Bài (1)</option>
+        <option value="Đại Phạm">Đại Phạm (1)</option>
+        <option value="Việt Vinh">Việt Vinh (1)</option>
+        <option value="Ninh Ích">Ninh Ích (1)</option>
+        <option value="Quyết Thắng">Quyết Thắng (1)</option>
+        <option value="Thạch Lương">Thạch Lương (1)</option>
+        <option value="Phan Thanh">Phan Thanh (1)</option>
+        <option value="Đại Phác">Đại Phác (1)</option>
+        <option value="Suối Bu">Suối Bu (1)</option>
+        <option value="Phù Nham">Phù Nham (1)</option>
+        <option value="Hồ Bốn">Hồ Bốn (1)</option>
+        <option value="Đắk Ring">Đắk Ring (1)</option>
+        <option value="Tân Quang">Tân Quang (1)</option>
+        <option value="Tự Lập">Tự Lập (1)</option>
+        <option value="Khánh Thiện">Khánh Thiện (1)</option>
+        <option value="Hiệp Bình Phước">Hiệp Bình Phước (1)</option>
+        <option value="Bản Mù">Bản Mù (1)</option>
+        <option value="Chế Tạo">Chế Tạo (1)</option>
+        <option value="Pá Hu">Pá Hu (1)</option>
+        <option value="Nghĩa An">Nghĩa An (1)</option>
+        <option value="Ít Ong">Ít Ong (1)</option>
+        <option value="Tân Phượng">Tân Phượng (1)</option>
+        <option value="Bàng La">Bàng La (1)</option>
+        <option value="Tân Lập">Tân Lập (1)</option>
+        <option value="Giáp Trung">Giáp Trung (1)</option>
+        <option value="Phú Mỹ">Phú Mỹ (1)</option>
+    </select>
+  </form>
+  
+  
+  <h3>Filter by province:</h3>
+  <form id="province-form">
+    <select id="province-select" multiple size="5" style="width: 100%;">
+        <option value="" disabled>-- Select Field --</option>
+        <option value="None">None</option>
+        <option value="Yên Bái">Yên Bái (2305)</option>
+        <option value="Hà Nội">Hà Nội (9)</option>
+        <option value="Đà Nẵng">Đà Nẵng (5)</option>
+        <option value="Tuyên Quang">Tuyên Quang (4)</option>
+        <option value="Sơn La">Sơn La (2)</option>
+        <option value="Gia Lai">Gia Lai (2)</option>
+        <option value="Hồ Chí Minh">Hồ Chí Minh (2)</option>
+        <option value="Hà Giang">Hà Giang (2)</option>
+        <option value="Bắc Ninh">Bắc Ninh (1)</option>
+        <option value="Kon Tum">Kon Tum (1)</option>
+        <option value="Thái Nguyên">Thái Nguyên (1)</option>
+        <option value="Khánh Hòa">Khánh Hòa (1)</option>
+        <option value="Thừa Thiên Huế">Thừa Thiên Huế (1)</option>
+        <option value="Hải Phòng">Hải Phòng (1)</option>
+        <option value="Đường 70">Đường 70 (1)</option>
+        <option value="Bắc Giang">Bắc Giang (1)</option>
+        <option value="Phú Thọ">Phú Thọ (1)</option>
+        <option value="Đồng Tháp">Đồng Tháp (1)</option>
+        <option value="Quảng Ninh">Quảng Ninh (1)</option>
+        <option value="Sóc Trăng">Sóc Trăng (1)</option>
+    </select>
+  </form>
+</div>
+<div id="map"></div>
+
+<script>
+goongjs.accessToken = 'HxMmt6ZrAlb6CVcvTGFXlmFxwM2jP3hEqbC91sP6';
+var map = new goongjs.Map({
+  container: 'map',
+  style: 'https://tiles.goong.io/assets/goong_map_web.json',
+  center: [104.89018540400008, 21.712216082000054],
+  zoom: 9
+});
+
+map.on('load', function () {
+  map.addSource('complaints', {
+    'type': 'geojson',
+    'data': './complaints.geojson'
+  });
+
+  map.addLayer(
+    {
+      'id': 'complaints-heat',
+      'type': 'heatmap',
+      'source': 'complaints',
+      'maxzoom': 9,
+      'paint': {
+        'heatmap-weight': ['interpolate', ['linear'], ['get', 'mag'], 0, 0, 6, 1],
+        'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 9, 3],
+        'heatmap-color': [
+          'interpolate',
+          ['linear'],
+          ['heatmap-density'],
+          0, 'rgba(33,102,172,0)',
+          0.2, 'rgb(103,169,207)',
+          0.4, 'rgb(209,229,240)',
+          0.6, 'rgb(253,219,199)',
+          0.8, 'rgb(239,138,98)',
+          1, 'rgb(178,24,43)'
+        ],
+        'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 9, 20],
+        'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 7, 1, 9, 0]
+      }
+    },
+    'water'
+  );
+
+  map.addLayer(
+    {
+      'id': 'complaints-point',
+      'type': 'circle',
+      'source': 'complaints',
+      'minzoom': 7,
+      'paint': {
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          7, ['interpolate', ['linear'], ['get', 'mag'], 1, 1, 6, 4],
+          16, ['interpolate', ['linear'], ['get', 'mag'], 1, 5, 6, 50]
+        ],
+        'circle-color': [
+          'interpolate',
+          ['linear'],
+          ['get', 'mag'],
+          1, 'rgba(33,102,172,0)',
+          2, 'rgb(103,169,207)',
+          3, 'rgb(209,229,240)',
+          4, 'rgb(253,219,199)',
+          5, 'rgb(239,138,98)',
+          6, 'rgb(178,24,43)'
+        ],
+        'circle-stroke-color': 'white',
+        'circle-stroke-width': 1,
+        'circle-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0, 8, 1]
+      }
+    },
+    'water'
+  );
+});
+
+// Filter data based on selected dropdown options
+function updateFilters() {
+  var selectedFields = Array.from(document.getElementById('field-select').selectedOptions).map(option => option.value);
+  var selectedDistricts = Array.from(document.getElementById('district-select').selectedOptions).map(option => option.value);
+  var selectedCommunes = Array.from(document.getElementById('commune-select').selectedOptions).map(option => option.value);
+  var selectedProvinces = Array.from(document.getElementById('province-select').selectedOptions).map(option => option.value);
+
+  var filters = ['all'];
+
+  if (selectedFields.length > 0) {
+    filters.push(['in', 'field'].concat(selectedFields));
+  }
+  if (selectedDistricts.length > 0) {
+    filters.push(['in', 'district'].concat(selectedDistricts));
+  }
+  if (selectedCommunes.length > 0) {
+    filters.push(['in', 'commune'].concat(selectedCommunes));
+  }
+  if (selectedProvinces.length > 0) {
+    filters.push(['in', 'province'].concat(selectedProvinces));
+  }
+
+  map.setFilter('complaints-heat', filters.length > 1 ? filters : null);
+  map.setFilter('complaints-point', filters.length > 1 ? filters : null);
+}
+
+document.getElementById('field-select').addEventListener('change', updateFilters);
+document.getElementById('district-select').addEventListener('change', updateFilters);
+document.getElementById('commune-select').addEventListener('change', updateFilters);
+document.getElementById('province-select').addEventListener('change', updateFilters);
+
+</script>
+</body>
+</html>
